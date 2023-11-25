@@ -1,21 +1,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
-// #include <conio.h>
 #include <time.h>
 #include <io.h>
 
-//colors
+// colors
 #define green(text) printf("\033[0;32m%s", text)
 #define red(text) printf("\033[1;31m", text)
 #define yellow(text) printf("\033[1;33m%s", text)
 #define cyan(text) printf("\033[0;36m%s", text)
 #define purple(text) printf("\033[0;35m%s", text)
 #define blue(text) printf("\033[0;34m%s", text)
-#define reset() printf("\033[0m") 
+#define reset() printf("\033[0m")
 
-//deklarasi file
+// deklarasi file
 FILE *f_acc;
 FILE *f_listing;
 FILE *f_riwayat;
@@ -23,41 +21,45 @@ FILE *temp_acc;
 FILE *temp_listing;
 FILE *temp_riwayat;
 
-//fungsi admin (listing = kendaraan)
+// fungsi admin (listing = kendaraan)
 void loginAdmin(int y), menuAdmin(), manajemenRequest(), manajemenUser(), requestUser(), manajemenListing();
-void editPasswordUser(char key[40], char pass[40]), hapusUser(char key[40]), editListing(int id, char ans[20]), hapusListing(int id), tambahListing(), cariListing(char key[40],int id);
+void editPasswordUser(char key[40], char pass[40]), hapusUser(char key[40]), editListing(int id, char ans[20]), hapusListing(int id), tambahListing(), cariListing(char key[40], int id);
 int fileExist(), idGenerator(char key[40]);
 
-//fungsi acc
+// fungsi acc
 void loginUser(int y), registerUser(), menuUser(), listingSaya(), riwayatSaya();
 void pilihJenis(char menu[20]), beliKendaraan(char jenis[20]), jualKendaraan(char jenis[20]), sewaKendaraan(char jenis[20]);
 int cekUsername(char username[16]);
 
-//fungsi sorting
+// fungsi sorting
 void userList(), kendaraanList(char key[20], char jenis[20]);
 
 // struct (tabel)
-struct Acc{
-    char nama[50],username[16],pass[16],no[12],alamat[100];
-}user, userSort[300], tempUser, cek, session;
+struct Acc
+{
+    char nama[50], username[16], pass[16], no[12], alamat[100];
+} user, userSort[300], tempUser, cek, session;
 
-struct Listing{
+struct Listing
+{
     char nama[50], status[20], jenis[10], merk[20], username[16], request[20];
     int id;
     double harga, hargaSewa;
-}listing, tempListing, listingSort[300];
+} listing, tempListing, listingSort[300];
 
-struct Riwayat{
-    char namaKendaraan[50], status[20], jenis[10], merk[20], namaUser[50], username[16],pembeli[16], alamat[100],no[12], waktuPembelian[20];
-    int id, lamaSewa; 
+struct Riwayat
+{
+    char namaKendaraan[50], status[20], jenis[10], merk[20], namaUser[50], username[16], pembeli[16], alamat[100], no[12], waktuPembelian[20];
+    int id, lamaSewa;
     double harga, hargaSewa, bayar;
-}riwayat, tempRiwayat, riwayatSort[300];
+} riwayat, tempRiwayat, riwayatSort[300];
 
-//variabel global 
-int i,j,k,n,pilih;
+// variabel global
+int i, j, k, n, pilih;
 char konfirmasi[10], nama[50], username[16], pass[16], alamat[100], no[12];
 
-int main(){
+int main()
+{
     int attempt = 3, pilih = 0, n;
     fileExist();
     system("cls");
@@ -82,14 +84,17 @@ int main(){
     printf("\t\t||===========================================================================||\n\n");
     printf("  Pilih : ");
     scanf("%d", &pilih);
-    switch (pilih){
-    case 1:{
+    switch (pilih)
+    {
+    case 1:
+    {
         printf("\n\t== Login Admin ==");
         system("cls");
         loginAdmin(attempt);
     }
     break;
-    case 2:{
+    case 2:
+    {
         system("cls");
         printf("\n\t    === Pilih [2] untuk Login ===");
         printf("\n== Belum Punya Akun?, Daftar dengan pilih [1] ==\n");
@@ -114,7 +119,8 @@ int main(){
         }
     }
     break;
-    case 3:{
+    case 3:
+    {
         system("cls");
         exit(0);
     }
@@ -128,9 +134,14 @@ int main(){
     }
 }
 
-int fileExist(){
-    if (access("userAcc.dat", F_OK) == 0 && access("dataListing.dat", F_OK) == 0 && access("riwayatUser.dat", F_OK) == 0){return 0;}
-    else{
+int fileExist()
+{
+    if (access("userAcc.dat", F_OK) == 0 && access("dataListing.dat", F_OK) == 0 && access("riwayatUser.dat", F_OK) == 0)
+    {
+        return 0;
+    }
+    else
+    {
         f_acc = fopen("userAcc.dat", "ab+");
         f_listing = fopen("listingKendaraan.dat", "ab+");
         f_riwayat = fopen("riwayatUser.dat", "ab+");
@@ -159,8 +170,9 @@ void datetime()
     sprintf(riwayat.waktuPembelian, "%02d/%02d/%d %02d:%02d:%02d", day, month, year, hours, minutes, seconds);
 }
 
-//login 
-void loginAdmin(int y){
+// login
+void loginAdmin(int y)
+{
     if (y > 0)
     {
 
@@ -174,7 +186,7 @@ void loginAdmin(int y){
 
         if (strcmp(username, "admin") == 0 && strcmp(pass, "admin123") == 0)
         {
-            strcpy(session.username, "admin"); 
+            strcpy(session.username, "admin");
             strcpy(session.pass, "admin123");
             printf("\n>Login Berhasil<\n");
             // printf("\nEnter anything to continue...\n");
@@ -245,7 +257,7 @@ void registerUser()
     char a[5];
     int z;
     printf("\n\t==[Sign Up]==\n");
-    
+
     fflush(stdin);
     printf("Fill in the required input\n");
     printf("\nNama Lengkap\t\t: ");
@@ -260,24 +272,28 @@ void registerUser()
     gets(user.pass);
 
     system("pause");
-    if (cekUsername(user.username) != 1){
+    if (cekUsername(user.username) != 1)
+    {
         f_acc = fopen("userAcc.dat", "ab+");
         fwrite(&user, sizeof(user), 1, f_acc);
         system("cls");
         printf("\n   ==[Registrasi Akun Berhasil]==\n");
         printf(" Lanjut Login? [y/n] : ");
-        fclose(f_acc);    
+        fclose(f_acc);
         gets(a);
-        if (strcasecmp(a, "y") == 0){
+        if (strcasecmp(a, "y") == 0)
+        {
             system("cls");
             loginUser(3);
         }
-        else{
+        else
+        {
             system("cls");
             main();
         }
     }
-    else{
+    else
+    {
         system("cls");
         printf("\n   ==[Registrasi Akun Gagal]==\n");
         printf("Username Sudah Ada!\n");
@@ -293,7 +309,6 @@ void registerUser()
             system("cls");
             registerUser();
         }
-
     }
 }
 
@@ -316,7 +331,7 @@ int cekUsername(char username[16])
     return x;
 }
 
-// Menu Admin 
+// Menu Admin
 void menuAdmin()
 {
     char answer[3];
@@ -332,7 +347,9 @@ void menuAdmin()
     switch (pilih)
     {
     case 1:
-    system("cls"); manajemenRequest(); break;
+        system("cls");
+        manajemenRequest();
+        break;
     case 2:
         system("cls");
         manajemenUser();
@@ -364,7 +381,8 @@ void menuAdmin()
     }
 }
 
-void manajemenRequest(){
+void manajemenRequest()
+{
     int id;
     system("cls");
     printf("\t  ==[ Request Listing ]==\n\n");
@@ -381,7 +399,8 @@ void manajemenRequest(){
     case 1:
         // system("cls");
         printf("\n\t  ==[ Terima Request ]==\n");
-        printf("Masukan ID Listing: "); scanf("%d", &id);
+        printf("Masukan ID Listing: ");
+        scanf("%d", &id);
         editListing(id, "Disetujui");
         break;
     case 2:
@@ -423,7 +442,7 @@ void manajemenUser()
         scanf("%s", &username);
         printf("Masukan Password Baru\t: ");
         scanf("%s", &pass);
-        editPasswordUser(username , pass);
+        editPasswordUser(username, pass);
         break;
     case 2:
         system("cls");
@@ -443,7 +462,8 @@ void manajemenUser()
     }
 }
 
-void editPasswordUser(char key[40], char pass[40]){
+void editPasswordUser(char key[40], char pass[40])
+{
     // char pass[16];
     int x = 0;
     printf("\n");
@@ -483,19 +503,22 @@ void editPasswordUser(char key[40], char pass[40]){
     manajemenUser();
 }
 
-void hapusUser(char key[40]){
-    int x=0;
+void hapusUser(char key[40])
+{
+    int x = 0;
     printf("\n");
     f_acc = fopen("userAcc.dat", "rb");
     temp_acc = fopen("userAcc2.dat", "wb");
 
     while (fread(&user, sizeof(user), 1, f_acc) == 1)
     {
-        if (strcmp(key, user.username) != 0)
+        if (strcmp(user.username, key) != 0)
         {
             fwrite(&user, sizeof(user), 1, temp_acc);
-        }else if(strcmp(key, user.username) == 0){
-            x=1;
+        }
+        else if (strcmp(user.username, key) == 0)
+        {
+            x = 1;
         }
     }
     fclose(f_acc);
@@ -503,22 +526,28 @@ void hapusUser(char key[40]){
     remove("userAcc.dat");
     rename("userAcc2.dat", "userAcc.dat");
 
-    if (x==1){
-        green("User Berhasil Dihapus!!\n\n");reset();
-    }else{
-        red("User Gagal Dihapus!!\n\n");reset();
+    if (x == 1)
+    {
+        green("User Berhasil Dihapus!!\n\n");
+        reset();
+    }
+    else
+    {
+        red("User Gagal Dihapus!!\n\n");
+        reset();
     }
     printf("\n<= lihat list user\n\n");
     system("pause");
     manajemenUser();
 }
 
-void manajemenListing(){
+void manajemenListing()
+{
     char key[40];
     int id;
     system("cls");
     printf("\t  ==[ Listing Kendaraan ]==\n\n");
-    kendaraanList("all","all");
+    kendaraanList("all", "all");
     printf("\n\t  ==[Manajemen Listing]==\n\n");
     printf("1. Tambah Kendaraan\n");
     printf("2. Hapus Kendaraan\n");
@@ -544,7 +573,7 @@ void manajemenListing(){
         printf("\t  ==[Cari Listing Kendaraan]==\n\n");
         printf("Masukan Merk atau Nama Kendaraan: ");
         gets(key);
-        cariListing(key,0);
+        cariListing(key, 0);
         break;
     case 4:
         system("cls");
@@ -557,52 +586,70 @@ void manajemenListing(){
     }
 }
 
-int idGenerator(char key[40]){
+int idGenerator(char key[40])
+{
     int len, sum;
     len = strlen(key);
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         sum = sum + key[i];
     }
-     return sum;
-}
 
-void tambahListing(){
-    //nama, status, jenis, merk, username, request, ID, harga, hargaSewa;
-    system("cls");
-    printf("\t  ==[Tambah Kendaraan]==\n\n");
-    printf("Banyak kendaraan: ");
-    scanf("%d", &n);
-    printf("\n");
-    getchar();
-    f_listing = fopen("listingKendaraan.dat", "ab+");
-    for (i = 0; i < n; i++)
+    // cek id
+    f_listing = fopen("listingKendaraan.dat", "rb");
+    while (fread(&tempListing, sizeof(tempListing), 1, f_listing))
     {
-        printf("%d.  Merk\t\t: ", i + 1);
-        gets(listing.merk);
-        printf("    Jenis(Motor/Mobil)\t: ");
-        gets(listing.jenis);
-        printf("    Nama\t\t: ");
-        scanf("%[^\n]s", listing.nama);
-        getchar();
-        printf("    Jual/Sewa?\t\t: ");
-        gets(listing.status);
-        if(strcasecmp(listing.status, "jual") == 0){
-            printf("    Harga Jual\t\t: ");
-            scanf("%lf", &listing.harga);
-            listing.hargaSewa = 0.0;
-        }else if (strcasecmp(listing.status, "sewa") == 0){
-            printf("    Harga Sewa(per jam)\t: ");
-            scanf("%lf", &listing.hargaSewa);
-            listing.harga=0.0;
-        }
-        listing.id = idGenerator(listing.nama);
-        strcpy(listing.request, "Disetujui");
-        strcpy(listing.username, "admin");
-        getchar();
-        printf("\n");
-        fwrite(&listing, sizeof(listing), 1, f_listing);
+        if (tempListing.id == sum)
+            ++sum;
     }
     fclose(f_listing);
+
+    return sum;
+}
+
+void tambahListing()
+{
+    // nama, status, jenis, merk, username, request, ID, harga, hargaSewa;
+    system("cls");
+    printf("\t  ==[Tambah Kendaraan]==\n\n");
+    // printf("Banyak kendaraan: ");
+    // scanf("%d", &n);
+    // printf("\n");
+    // getchar();
+    // for (i = 0; i < n; i++)
+    // {
+    printf("    Merk\t\t: ");
+    gets(listing.merk);
+    printf("    Jenis(Motor/Mobil)\t: ");
+    gets(listing.jenis);
+    printf("    Nama\t\t: ");
+    scanf("%[^\n]s", &listing.nama);
+    getchar();
+    printf("    Jual/Sewa?\t\t: ");
+    gets(listing.status);
+    if (strcasecmp(listing.status, "jual") == 0)
+    {
+        printf("    Harga Jual\t\t: ");
+        scanf("%lf", &listing.harga);
+        listing.hargaSewa = 0.0;
+    }
+    else if (strcasecmp(listing.status, "sewa") == 0)
+    {
+        printf("    Harga Sewa(per jam)\t: ");
+        scanf("%lf", &listing.hargaSewa);
+        listing.harga = 0.0;
+    }
+    listing.id = idGenerator(listing.nama);
+    strcpy(listing.request, "Disetujui");
+    strcpy(listing.username, "admin");
+    getchar();
+    printf("\n");
+    // }
+    // write to file, avoiding openning 2 file simontenously
+    f_listing = fopen("listingKendaraan.dat", "ab+");
+    fwrite(&listing, sizeof(listing), 1, f_listing);
+    fclose(f_listing);
+
     green("\nBerhasil Ditambahkan!\n\n");
     reset();
     printf("\n<= Lihat listing\n\n");
@@ -610,29 +657,33 @@ void tambahListing(){
     manajemenListing();
 }
 
-void editListing(int id, char ans[20]){
+void editListing(int id, char ans[20])
+{
     system("cls");
     int x = 0;
     printf("\n");
     f_listing = fopen("listingKendaraan.dat", "rb");
-    temp_listing = fopen("listingKendaraan2", "wb");
+    temp_listing = fopen("listingKendaraan2.dat", "wb");
 
-    while (fread(&tempListing, sizeof(tempListing), 1, f_listing) == 1)
+    while (fread(&tempListing, sizeof(tempListing), 1, f_listing))
     {
-        if (strcmp(ans, tempListing.id) != 0){
+        if (listing.id != id)
+        {
             fwrite(&tempListing, sizeof(tempListing), 1, temp_listing);
         }
-        else if (strcmp(ans, tempListing.id) == 0){
+        else if (listing.id == id)
+        {
             strcpy(tempListing.request, ans);
             fwrite(&tempListing, sizeof(tempListing), 1, temp_listing);
             x = 1;
         }
     }
+
     fclose(f_listing);
     fclose(temp_listing);
 
     remove("listingKendaraan.dat");
-    rename("listingKendaraan2", "listingKendaraan.dat");
+    rename("listingKendaraan2.dat", "listingKendaraan.dat");
     if (x == 1)
     {
         green("Berhasil Mengubah Request!!\n\n");
@@ -648,20 +699,22 @@ void editListing(int id, char ans[20]){
     manajemenRequest();
 }
 
-void hapusListing(int id){
-    int x=0;
+void hapusListing(int id)
+{
+    int x = 0;
     printf("\n");
     f_listing = fopen("listingKendaraan.dat", "rb");
     temp_listing = fopen("listingKendaraan2.dat", "wb");
 
-    while(fread(&listing, sizeof(listing), 1, f_listing) == 1)
+    while (fread(&listing, sizeof(listing), 1, f_listing) == 1)
     {
-        if (listing.id != id){
+        if (listing.id != id)
+        {
             fwrite(&listing, sizeof(listing), 1, temp_listing);
         }
         else if (listing.id == id)
         {
-            x=1;
+            x = 1;
         }
     }
     fclose(f_listing);
@@ -671,10 +724,13 @@ void hapusListing(int id){
     rename("listingKendaraan2.dat", "listingKendaraan.dat");
     // printf("%d, %d",x,id);
 
-    if(x==1){
+    if (x == 1)
+    {
         green("Listing Kendaraan Berhasil Dihapus!!\n");
         reset();
-    }else{
+    }
+    else
+    {
         red("Listing Kendaraan Gagal Dihapus!!\n");
         reset();
     }
@@ -684,7 +740,8 @@ void hapusListing(int id){
     manajemenListing();
 }
 
-void cariListing(char key[40], int id){
+void cariListing(char key[40], int id)
+{
     int x = 0;
     system("cls");
     printf("\n");
@@ -692,24 +749,8 @@ void cariListing(char key[40], int id){
 
     while ((fread(&listing, sizeof(listing), 1, f_listing)) != 0)
     {
-        if ((strcmp(listing.nama, key)) == 0 && (strcmp(listing.merk, key)) == 0){
-            printf("%d.  ID\t\t: %d\n", x + 1, listing.id);
-            printf("    Jenis\t: %s\n", listing.jenis);
-            printf("    Merk\t: %s\n", listing.merk);
-            printf("    Nama\t: %s\n", listing.nama);
-            printf("    Pemilik\t: %s\n", listing.username);
-            printf("    Status\t: ");
-            if(strcasecmp(listing.status, "jual")==0){
-                green(listing.status);reset();
-                printf("\n    Harga\t: Rp.%.2f\n\n", listing.harga);
-                }
-            else if(strcasecmp(listing.status, "sewa")==0){
-                cyan(listing.status);reset();
-                printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listing.hargaSewa);    
-                }
-            x++;
-        }
-        if (listing.id == id){
+        if ((strcmp(listing.nama, key)) == 0 || (strcmp(listing.merk, key)) == 0)
+        {
             printf("%d.  ID\t\t: %d\n", x + 1, listing.id);
             printf("    Jenis\t: %s\n", listing.jenis);
             printf("    Merk\t: %s\n", listing.merk);
@@ -730,7 +771,51 @@ void cariListing(char key[40], int id){
             }
             x++;
         }
-        else if (listing.id == id && strcasecmp(key, "menuSewa")==0)
+        if (listing.id == id)
+        {
+            printf("%d.  ID\t\t: %d\n", x + 1, listing.id);
+            printf("    Jenis\t: %s\n", listing.jenis);
+            printf("    Merk\t: %s\n", listing.merk);
+            printf("    Nama\t: %s\n", listing.nama);
+            printf("    Pemilik\t: %s\n", listing.username);
+            printf("    Status\t: ");
+            if (strcasecmp(listing.status, "jual") == 0)
+            {
+                green(listing.status);
+                reset();
+                printf("\n    Harga\t: Rp.%.2f\n\n", listing.harga);
+            }
+            else if (strcasecmp(listing.status, "sewa") == 0)
+            {
+                cyan(listing.status);
+                reset();
+                printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listing.hargaSewa);
+            }
+            x++;
+        }
+        else if (listing.id == id && strcasecmp(key, "menuSewa") == 0)
+        {
+            printf("%d.  ID\t\t: %d\n", x + 1, listing.id);
+            printf("    Jenis\t: %s\n", listing.jenis);
+            printf("    Merk\t: %s\n", listing.merk);
+            printf("    Nama\t: %s\n", listing.nama);
+            printf("    Pemilik\t: %s\n", listing.username);
+            printf("    Status\t: ");
+            if (strcasecmp(listing.status, "jual") == 0)
+            {
+                green(listing.status);
+                reset();
+                printf("\n    Harga\t: Rp.%.2f\n\n", listing.harga);
+            }
+            else if (strcasecmp(listing.status, "sewa") == 0)
+            {
+                cyan(listing.status);
+                reset();
+                printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listing.hargaSewa);
+            }
+            break;
+        }
+        else if (listing.id == id && strcasecmp(key, "menuBeli") == 0)
         {
             printf("%d.  ID\t\t: %d\n", x + 1, listing.id);
             printf("    Jenis\t: %s\n", listing.jenis);
@@ -759,7 +844,8 @@ void cariListing(char key[40], int id){
     }
     fclose(f_listing);
 
-    if(strcmp(session.username, "admin")==0 && strcmp(session.pass, "admin123")==0){
+    if (strcmp(session.username, "admin") == 0 && strcmp(session.pass, "admin123") == 0)
+    {
         printf("\n<= Lihat Listing Kendaraan\n");
         system("pause");
         manajemenListing();
@@ -770,7 +856,8 @@ void cariListing(char key[40], int id){
 }
 
 // menu User
-void menuUser(){
+void menuUser()
+{
     char answer[3];
     system("cls");
     printf("\t==[Selamat Datang di D'Showroom ~ %s]==\n\n", session.username);
@@ -784,38 +871,56 @@ void menuUser(){
     scanf("%d", &pilih);
     getchar();
     switch (pilih)
+    {
+    case 1:
+        system("cls");
+        pilihJenis("Beli");
+        break;
+    case 2:
+        system("cls");
+        pilihJenis("Jual");
+        break;
+    case 3:
+        system("cls");
+        pilihJenis("Sewa");
+        break;
+    case 4:
+        system("cls");
+        listingSaya();
+        break;
+    case 5:
+        system("cls");
+        riwayatSaya();
+        break;
+    case 6:
+        system("cls");
+        printf("\t===LOGOUT===");
+        printf("\nYakin untuk melanjutkan (y/n)? ");
+        scanf("%s", &answer);
+        if (strcmp(answer, "y") == 0)
         {
-            case 1: system("cls"); pilihJenis("Beli"); break;
-            case 2: system("cls"); pilihJenis("Jual"); break;
-            case 3: system("cls"); pilihJenis("Sewa"); break;
-            case 4: system("cls"); listingSaya(); break;
-            case 5: system("cls"); riwayatSaya(); break;
-            case 6: 
-                system("cls");
-                printf("\t===LOGOUT===");
-                printf("\nYakin untuk melanjutkan (y/n)? "); scanf("%s",&answer);
-                if (strcmp(answer, "y") == 0){
-                system("cls");
-                main();
-                }
-                else{
-                system("cls");
-                menuUser();
-                }
-            break;
-            default : 
-                // printf("Harap masukan opsi yang benar...\n"); 
-                system("pause"); 
-                menuUser(); 
-            break;  
-            
+            system("cls");
+            main();
         }
+        else
+        {
+            system("cls");
+            menuUser();
+        }
+        break;
+    default:
+        // printf("Harap masukan opsi yang benar...\n");
+        system("pause");
+        menuUser();
+        break;
+    }
 }
 
-void pilihJenis(char menu[20]){
+void pilihJenis(char menu[20])
+{
     char answer[3];
     system("cls");
-    printf("\t==[Pilih Jenis Kendaraan [%s]~ %s]==\n\n", menu,session.username);
+    printf("\t==[Pilih Jenis Kendaraan [%s]~ %s]==\n\n", menu, session.username);
     printf("1. Motor\n");
     printf("2. Mobil\n");
     printf("3. Ganti Menu\n");
@@ -823,39 +928,45 @@ void pilihJenis(char menu[20]){
     scanf("%d", &pilih);
     getchar();
     switch (pilih)
-        {
-            case 1: system("cls"); 
-                if(strcasecmp(menu, "beli")==0)
-                    beliKendaraan("motor");
-                else if (strcasecmp(menu, "jual") == 0)
-                    jualKendaraan("motor");
-                else if (strcasecmp(menu, "sewa") == 0)
-                    sewaKendaraan("motor");
-            break;
-            case 2: system("cls");
-                if (strcasecmp(menu, "beli") == 0)
-                    beliKendaraan("mobil");
-                else if (strcasecmp(menu, "jual") == 0)
-                    jualKendaraan("mobil");
-                else if (strcasecmp(menu, "sewa") == 0)
-                    sewaKendaraan("mobil");
-            break;
-                case 3: system("cls"); menuUser(); break;
-            default : 
-                // printf("Harap masukan opsi yang benar...\n"); 
-                system("pause"); 
-                menuUser(); 
-            break;
-            }
+    {
+    case 1:
+        system("cls");
+        if (strcasecmp(menu, "beli") == 0)
+            beliKendaraan("motor");
+        else if (strcasecmp(menu, "jual") == 0)
+            jualKendaraan("motor");
+        else if (strcasecmp(menu, "sewa") == 0)
+            sewaKendaraan("motor");
+        break;
+    case 2:
+        system("cls");
+        if (strcasecmp(menu, "beli") == 0)
+            beliKendaraan("mobil");
+        else if (strcasecmp(menu, "jual") == 0)
+            jualKendaraan("mobil");
+        else if (strcasecmp(menu, "sewa") == 0)
+            sewaKendaraan("mobil");
+        break;
+    case 3:
+        system("cls");
+        menuUser();
+        break;
+    default:
+        // printf("Harap masukan opsi yang benar...\n");
+        system("pause");
+        menuUser();
+        break;
+    }
 }
 
-void beliKendaraan(char jenis[20]){
+void beliKendaraan(char jenis[20])
+{
     int id, x = 0, attempt = 3;
     double uang;
     // pilih kendaraan
     system("cls");
     printf("\t  ==[ Beli Kendaraan ]==\n\n");
-    kendaraanList("jual", jenis);
+    kendaraanList("jualUser", jenis);
     printf("\n\t  ==[ Pilih Kendaraan ]==\n\tatau ketik 1 untuk kembali ke Menu Utama\n");
     printf("ID kendaraan\t: ");
     scanf("%d", &id);
@@ -865,7 +976,7 @@ void beliKendaraan(char jenis[20]){
     }
 
     // cari kendaraan
-    cariListing(" ", id);
+    cariListing("menuBeli", id);
 
     // pemabayaran
     printf("\n\nHarga Kendaraan Sebesar, Rp.%.2f\n", listing.harga);
@@ -911,27 +1022,27 @@ void beliKendaraan(char jenis[20]){
     f_listing = fopen("listingKendaraan.dat", "rb");
     temp_listing = fopen("listingKendaraan2.dat", "wb");
 
-    while (fread(&listing, sizeof(listing), 1, f_listing) == 1)
+    while (fread(&tempListing, sizeof(tempListing), 1, f_listing))
     {
         if (listing.id != id)
         {
-            fwrite(&listing, sizeof(listing), 1, temp_listing);
+            fwrite(&tempListing, sizeof(tempListing), 1, temp_listing);
         }
         else if (listing.id == id)
         {
-            strcpy(listing.status, "Terjual");
-            fwrite(&listing, sizeof(listing), 1, temp_listing);
+            strcpy(tempListing.status, "Terjual");
+            fwrite(&tempListing, sizeof(tempListing), 1, temp_listing);
             x = 1;
         }
     }
+
     fclose(f_listing);
     fclose(temp_listing);
-
     remove("listingKendaraan.dat");
     rename("listingKendaraan2.dat", "listingKendaraan.dat");
 
     // write ke riwayat
-    f_riwayat = fopen("riwayatUser.dat", "wb");
+    f_riwayat = fopen("riwayatUser.dat", "ab");
     riwayat.id = idGenerator(listing.nama);
     strcpy(riwayat.namaKendaraan, listing.nama);
     strcpy(riwayat.status, "Terjual");
@@ -943,20 +1054,20 @@ void beliKendaraan(char jenis[20]){
     strcpy(riwayat.alamat, session.alamat);
     strcpy(riwayat.no, session.no);
     datetime(); // waktu beli
-    riwayat.harga = listing.hargaSewa;
+    riwayat.harga = listing.harga;
     printf("\n");
-    fwrite(&riwayat, sizeof(riwayat), 1, f_listing);
+    fwrite(&riwayat, sizeof(riwayat), 1, f_riwayat);
     fclose(f_riwayat);
 
     system("cls");
     if (x == 1)
     {
-        green("Berhasil Menyewa Kendaraan!!\n\n");
+        green("Berhasil Membeli Kendaraan!!\n\n");
         reset();
     }
     else
     {
-        red("Gagal Menyewa Kendaraan!!\n\n");
+        red("Gagal Membeli Kendaraan!!\n\n");
         reset();
     }
     printf("\n<= Lihat Riwayat Saya\n\n");
@@ -964,7 +1075,8 @@ void beliKendaraan(char jenis[20]){
     riwayatSaya();
 }
 
-void jualKendaraan(char jenis[20]){
+void jualKendaraan(char jenis[20])
+{
     system("cls");
     printf("\t  ==[Jual Kendaraan]==\n\n");
     printf("Banyak kendaraan: ");
@@ -1009,28 +1121,30 @@ void jualKendaraan(char jenis[20]){
     listingSaya();
 }
 
-void sewaKendaraan(char jenis[20]){
-    int id, t, x=0, attempt=3;
+void sewaKendaraan(char jenis[20])
+{
+    int id, t, x = 0, attempt = 3;
     double uang, bayar;
-    //pilih kendaraan
+    // pilih kendaraan
     system("cls");
     printf("\t  ==[ Sewa Kendaraan ]==\n\n");
-    kendaraanList("sewa", jenis);
+    kendaraanList("sewaUser", jenis);
     printf("\n\t  ==[ Pilih Kendaraan ]==\n\tatau ketik 1 untuk kembali ke Menu Utama\n");
     printf("ID kendaraan\t: ");
     scanf("%d", &id);
-    if (id == 1){
+    if (id == 1)
+    {
         menuUser();
     }
     printf("Lama Sewa\t: ");
     scanf("%d", &t);
-    
-    //cari kendaraan
+
+    // cari kendaraan
     cariListing("menuSewa", id);
 
-    //pemabayaran
-    bayar = listing.hargaSewa*t;
-    printf("\n\nHarga Sewa Sebesar, Rp.%.2f\n", listing.hargaSewa);
+    // pemabayaran
+    bayar = listing.hargaSewa * t;
+    printf("\n\nHarga Sewa Sebesar, Rp.%.2f\n", bayar);
     while (attempt > 0)
     {
         printf("Masukan Nominal: Rp.");
@@ -1073,42 +1187,42 @@ void sewaKendaraan(char jenis[20]){
     f_listing = fopen("listingKendaraan.dat", "rb");
     temp_listing = fopen("listingKendaraan2.dat", "wb");
 
-    while (fread(&listing, sizeof(listing), 1, f_listing) == 1)
+    while (fread(&tempListing, sizeof(tempListing), 1, f_listing))
     {
         if (listing.id != id)
         {
-            fwrite(&listing, sizeof(listing), 1, temp_listing);
+            fwrite(&tempListing, sizeof(tempListing), 1, temp_listing);
         }
         else if (listing.id == id)
         {
-            strcpy(listing.status, "DiSewakan");
-            fwrite(&listing, sizeof(listing), 1, temp_listing);
+            strcpy(tempListing.status, "Disewakan");
+            fwrite(&tempListing, sizeof(tempListing), 1, temp_listing);
             x = 1;
         }
     }
+
     fclose(f_listing);
     fclose(temp_listing);
-
     remove("listingKendaraan.dat");
     rename("listingKendaraan2.dat", "listingKendaraan.dat");
 
     // write ke riwayat
     f_riwayat = fopen("riwayatUser.dat", "wb");
-        riwayat.id = idGenerator(listing.nama);
-        strcpy(riwayat.namaKendaraan, listing.nama);
-        strcpy(riwayat.status, listing.status);
-        strcpy(riwayat.jenis, jenis);
-        strcpy(riwayat.merk, listing.merk);
-        strcpy(riwayat.namaUser, session.nama);
-        strcpy(riwayat.username, listing.username);
-        strcpy(riwayat.pembeli, session.username);
-        strcpy(riwayat.alamat, session.alamat);
-        strcpy(riwayat.no, session.no);
-        datetime(); //waktu 
-        riwayat.lamaSewa = t;
-        riwayat.hargaSewa = listing.hargaSewa;
-        riwayat.bayar = bayar;
-        printf("\n");
+    riwayat.id = idGenerator(listing.nama);
+    strcpy(riwayat.namaKendaraan, listing.nama);
+    strcpy(riwayat.status, listing.status);
+    strcpy(riwayat.jenis, jenis);
+    strcpy(riwayat.merk, listing.merk);
+    strcpy(riwayat.namaUser, session.nama);
+    strcpy(riwayat.username, listing.username);
+    strcpy(riwayat.pembeli, session.username);
+    strcpy(riwayat.alamat, session.alamat);
+    strcpy(riwayat.no, session.no);
+    datetime(); // waktu
+    riwayat.lamaSewa = t;
+    riwayat.hargaSewa = listing.hargaSewa;
+    riwayat.bayar = bayar;
+    printf("\n");
     fwrite(&riwayat, sizeof(riwayat), 1, f_listing);
     fclose(f_riwayat);
 
@@ -1128,7 +1242,8 @@ void sewaKendaraan(char jenis[20]){
     riwayatSaya();
 }
 
-void listingSaya(){
+void listingSaya()
+{
     system("cls");
     printf("\t  ==[ Listing Kendaraan Saya ]==\n\n");
     kendaraanList(session.username, "all");
@@ -1137,7 +1252,8 @@ void listingSaya(){
     menuUser();
 }
 
-void riwayatSaya(){
+void riwayatSaya()
+{
     system("cls");
     printf("\t  ==[ Riwayat Saya ]==\n\n");
     riwayatList();
@@ -1145,13 +1261,14 @@ void riwayatSaya(){
     system("pause");
     menuUser();
 }
- 
 
 // fungsi sorting
-void userList(){
+void userList()
+{
     int len = 0;
     f_acc = fopen("userAcc.dat", "rb");
-    while (fread((&user), sizeof(user), 1, f_acc)){
+    while (fread((&user), sizeof(user), 1, f_acc))
+    {
         userSort[len] = user;
         len++;
     }
@@ -1169,7 +1286,8 @@ void userList(){
         }
     }
 
-    for( i = 0; i<len ; i++){
+    for (i = 0; i < len; i++)
+    {
         printf("%d.  Username\t\t: %s\n", i + 1, userSort[i].username);
         printf("    Nama\t\t: %s\n", userSort[i].nama);
         printf("    Alamat\t\t: %s\n", userSort[i].alamat);
@@ -1177,32 +1295,47 @@ void userList(){
     }
 }
 
-void kendaraanList(char key[20], char jenis[20]){
+void kendaraanList(char key[20], char jenis[20])
+{
     int len = 0;
     f_listing = fopen("listingKendaraan.dat", "rb");
 
-    while(fread(&listing, sizeof(listing), 1, f_listing)){
-        if (strcasecmp(listing.status, key) == 0 && strcasecmp(listing.jenis, jenis)== 0){
-            listingSort[len] = listing; //buat nampilin list yang spesifik
+    while (fread(&listing, sizeof(listing), 1, f_listing))
+    {
+        if (strcasecmp(listing.status, key) == 0 && strcasecmp(listing.jenis, jenis) == 0)
+        {
+            listingSort[len] = listing; // buat nampilin list yang spesifik
             len++;
         }
-        else if (strcasecmp(listing.request, key) == 0){
-            listingSort[len] = listing; //buat admin nge-acc
+        else if (strcasecmp(listing.request, key) == 0)
+        {
+            listingSort[len] = listing; // buat admin nge-acc
             len++;
         }
-        else if (strcasecmp(listing.username, key) == 0 )
+        else if (strcasecmp(listing.username, key) == 0)
         {
             listingSort[len] = listing; // buat fitur listing saya
             len++;
         }
-        else if(strcasecmp(key, "all") == 0){
-            listingSort[len] = listing; //buat nampilin semua list 
+        else if (strcasecmp(key, "jualUser") == 0 && strcasecmp(listing.status, "jual") == 0 && strcasecmp(listing.jenis, jenis) == 0 && strcasecmp(listing.username, session.username) != 0)
+        {
+            listingSort[len] = listing; // buat fitur beli kendaraan user
+            len++;
+        }
+        else if (strcasecmp(key, "sewaUser") == 0 && strcasecmp(listing.status, "jual") == 0 && strcasecmp(listing.jenis, jenis) == 0 && strcasecmp(listing.username, session.username) != 0)
+        {
+            listingSort[len] = listing; // buat fitur sewa kendaraan user
+            len++;
+        }
+        else if (strcasecmp(key, "all") == 0 && strcasecmp(listing.request, "pending") != 0 && strcasecmp(listing.status, "terjual") != 0 && strcasecmp(listing.status, "disewakan") != 0)
+        {
+            listingSort[len] = listing; // buat nampilin semua list
             len++;
         }
     }
     fclose(f_listing);
 
-    //bbsordt
+    // bbsordt
     for (i = 0; i < len - 1; i++)
     {
         for (j = 0; j < len - i - 1; j++)
@@ -1228,54 +1361,69 @@ void kendaraanList(char key[20], char jenis[20]){
         }
     }
 
-        // print sorted data
-        for (i = 0; i < len; i++)
+    // print sorted data
+    for (i = 0; i < len; i++)
+    {
+        printf("%d.  ID\t\t: %d\n", i + 1, listingSort[i].id);
+        printf("    Jenis\t: %s\n", listingSort[i].jenis);
+        printf("    Merk\t: %s\n", listingSort[i].merk);
+        printf("    Nama\t: %s\n", listingSort[i].nama);
+        printf("    Pemilik\t: %s\n", listingSort[i].username);
+        printf("    Status\t: ");
+        if (strcasecmp(listingSort[i].status, "jual") == 0)
         {
-            printf("%d.  ID\t\t: %d\n", i + 1, listingSort[i].id);
-            printf("    Jenis\t: %s\n", listingSort[i].jenis);
-            printf("    Merk\t: %s\n", listingSort[i].merk);
-            printf("    Nama\t: %s\n", listingSort[i].nama);
-            printf("    Pemilik\t: %s\n", listingSort[i].username);
-            printf("    Status\t: ");
-            if (strcasecmp(listingSort[i].status, "jual") == 0)
-            {
-                green(listingSort[i].status);
-                reset();
-                printf("\n    Harga\t: Rp.%.2f\n\n", listingSort[i].harga);
-            }
-            else if (strcasecmp(listingSort[i].status, "sewa") == 0)
-            {
-                cyan(listingSort[i].status);
-                reset();
-                printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listingSort[i].hargaSewa);
-            }
+            green(listingSort[i].status);
+            reset();
+            printf("\n    Harga\t: Rp.%.2f\n\n", listingSort[i].harga);
         }
+        else if (strcasecmp(listingSort[i].status, "sewa") == 0)
+        {
+            cyan(listingSort[i].status);
+            reset();
+            printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listingSort[i].hargaSewa);
+        }
+        else if (strcasecmp(listingSort[i].status, "terjual") == 0)
+        {
+            yellow(listingSort[i].status);
+            reset();
+            printf("\n    Harga\t: Rp.%.2f\n\n", listingSort[i].harga);
+        }
+        else if (strcasecmp(listingSort[i].status, "disewakan") == 0)
+        {
+            yellow(listingSort[i].status);
+            reset();
+            printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listingSort[i].hargaSewa);
+        }
+    }
 }
 
-void riwayatList(){
+void riwayatList()
+{
     int len = 0;
     f_riwayat = fopen("riwayatUser.dat", "rb");
-    while (fread((&riwayat), sizeof(riwayat), 1, f_riwayat))
+    while (fread((&riwayat), sizeof(riwayat), 1, f_riwayat) != 0)
     {
-        if (strcasecmp(riwayat.username, session.username) == 0 || strcasecmp(riwayat.pembeli, session.username) == 0){
+        if (strcasecmp(riwayat.pembeli, session.username) == 0)
+        {
             riwayatSort[len] = riwayat;
             len++;
         }
     }
     fclose(f_riwayat);
-    for (i = 0; i < len - 1; i++)
-    {
-        for (j = 0; j < len - i - 1; j++)
-        {
-            if (strcmp(riwayatSort[j].waktuPembelian, riwayatSort[j + 1].waktuPembelian) > 0)
-            {
-                tempRiwayat = riwayatSort[j];
-                riwayatSort[j] = riwayatSort[j + 1];
-                riwayatSort[j + 1] = tempRiwayat;
-            }
-        }
-    }
-
+    printf("%s\n", riwayatSort[0].waktuPembelian);
+    // for (i = 0; i < len - 1; i++)
+    // {
+    //     for (j = 0; j < len - i - 1; j++)
+    //     {
+    //         if (strcmp(riwayatSort[j].waktuPembelian, riwayatSort[j + 1].waktuPembelian) > 0)
+    //         {
+    //             tempRiwayat = riwayatSort[j];
+    //             riwayatSort[j] = riwayatSort[j + 1];
+    //             riwayatSort[j + 1] = tempRiwayat;
+    //         }
+    //     }
+    // }
+    system("pause");
     for (i = 0; i < len; i++)
     {
         printf("%d.  ID\t\t: %s\n", i + 1, riwayatSort[i].id);
@@ -1287,7 +1435,7 @@ void riwayatList(){
         printf("    No. Telp\t\t: %s\n", riwayatSort[i].no);
         printf("    Waktu Transaksi\t\t: %s\n", riwayatSort[i].waktuPembelian);
         printf("    Biaya Sewa\t\t: %.2f\n", riwayatSort[i].hargaSewa);
-        if (strcasecmp(riwayatSort[i].status, "jual") == 0 || strcasecmp(riwayatSort[i].status, "Terjual")==0)
+        if (strcasecmp(riwayatSort[i].status, "jual") == 0 || strcasecmp(riwayatSort[i].status, "Terjual") == 0)
         {
             green(riwayatSort[i].status);
             reset();
@@ -1302,4 +1450,5 @@ void riwayatList(){
             printf("\n    Lama Sewa\t: %d\n\n", riwayatSort[i].lamaSewa);
         }
     }
+    system("pause");
 }
