@@ -13,6 +13,7 @@
 #define blue(text) printf("\033[0;34m%s", text)
 #define reset() printf("\033[0m")
 
+
 // deklarasi file
 FILE *f_acc;
 FILE *f_listing;
@@ -32,7 +33,7 @@ void pilihJenis(char menu[20]), beliKendaraan(char jenis[20]), jualKendaraan(cha
 int cekUsername(char username[16]);
 
 // fungsi sorting
-void userList(), kendaraanList(char key[20], char jenis[20]);
+void userList(), kendaraanList(char key[20], char jenis[20]), riwayatList();
 
 // struct (tabel)
 struct Acc
@@ -612,31 +613,26 @@ void tambahListing()
     // nama, status, jenis, merk, username, request, ID, harga, hargaSewa;
     system("cls");
     printf("\t  ==[Tambah Kendaraan]==\n\n");
-    // printf("Banyak kendaraan: ");
-    // scanf("%d", &n);
-    // printf("\n");
-    // getchar();
-    // for (i = 0; i < n; i++)
-    // {
     printf("    Merk\t\t: ");
     gets(listing.merk);
     printf("    Jenis(Motor/Mobil)\t: ");
     gets(listing.jenis);
     printf("    Nama\t\t: ");
-    scanf("%[^\n]s", &listing.nama);
-    getchar();
+    gets(listing.nama);
     printf("    Jual/Sewa?\t\t: ");
     gets(listing.status);
     if (strcasecmp(listing.status, "jual") == 0)
     {
         printf("    Harga Jual\t\t: ");
         scanf("%lf", &listing.harga);
+        getchar();
         listing.hargaSewa = 0.0;
     }
     else if (strcasecmp(listing.status, "sewa") == 0)
     {
         printf("    Harga Sewa(per jam)\t: ");
         scanf("%lf", &listing.hargaSewa);
+        getchar();
         listing.harga = 0.0;
     }
     listing.id = idGenerator(listing.nama);
@@ -644,7 +640,6 @@ void tambahListing()
     strcpy(listing.username, "admin");
     getchar();
     printf("\n");
-    // }
     // write to file, avoiding openning 2 file simontenously
     f_listing = fopen("listingKendaraan.dat", "ab+");
     fwrite(&listing, sizeof(listing), 1, f_listing);
@@ -667,11 +662,11 @@ void editListing(int id, char ans[20])
 
     while (fread(&tempListing, sizeof(tempListing), 1, f_listing))
     {
-        if (listing.id != id)
+        if (tempListing.id != id)
         {
             fwrite(&tempListing, sizeof(tempListing), 1, temp_listing);
         }
-        else if (listing.id == id)
+        else if (tempListing.id == id)
         {
             strcpy(tempListing.request, ans);
             fwrite(&tempListing, sizeof(tempListing), 1, temp_listing);
@@ -977,7 +972,11 @@ void beliKendaraan(char jenis[20])
 
     // cari kendaraan
     cariListing("menuBeli", id);
-
+    if (strcasecmp(listing.status,"jual") != 0)
+    {
+        beliKendaraan(jenis);
+    }
+    
     // pemabayaran
     printf("\n\nHarga Kendaraan Sebesar, Rp.%.2f\n", listing.harga);
     while (attempt > 0)
@@ -985,20 +984,19 @@ void beliKendaraan(char jenis[20])
         printf("Masukan Nominal: Rp.");
         scanf("%lf", &uang);
         getchar();
-        if (listing.harga == uang)
+        if (listing.harga < uang)
+        {
+            system("cls");
+            printf("Kembalian: Rp.%.2f\n", uang - listing.harga);
+            green("Pembayaran Berhasil!!\n\n");
+            reset();
+            break;
+        }
+        else if (listing.harga == uang)
         {
             system("cls");
             green("Pembayaran Berhasil!!\n");
             printf("Berhasil Membeli Kendaraan!!\n\n");
-            reset();
-            break;
-        }
-        else if (listing.harga < uang)
-        {
-            uang = uang - listing.harga;
-            system("cls");
-            printf("Kembalian: Rp.%.2f\n", uang);
-            green("Pembayaran Berhasil!!\n\n");
             reset();
             break;
         }
@@ -1015,7 +1013,7 @@ void beliKendaraan(char jenis[20])
         red("\n\t Transaksi Gagal!!\n\n");
         reset();
         system("pause");
-        sewaKendaraan(jenis);
+        beliKendaraan(jenis);
     }
 
     // proses sewa, update listing status
@@ -1035,27 +1033,27 @@ void beliKendaraan(char jenis[20])
             x = 1;
         }
     }
-
     fclose(f_listing);
     fclose(temp_listing);
     remove("listingKendaraan.dat");
     rename("listingKendaraan2.dat", "listingKendaraan.dat");
 
     // write ke riwayat
-    f_riwayat = fopen("riwayatUser.dat", "ab");
     riwayat.id = idGenerator(listing.nama);
-    strcpy(riwayat.namaKendaraan, listing.nama);
-    strcpy(riwayat.status, "Terjual");
-    strcpy(riwayat.jenis, jenis);
-    strcpy(riwayat.merk, listing.merk);
-    strcpy(riwayat.namaUser, session.nama);
-    strcpy(riwayat.username, listing.username);
-    strcpy(riwayat.pembeli, session.username);
-    strcpy(riwayat.alamat, session.alamat);
-    strcpy(riwayat.no, session.no);
+    sprintf(riwayat.namaKendaraan, "%s",listing.nama);
+    sprintf(riwayat.status, "%s","Terjual");
+    sprintf(riwayat.jenis, "%s",jenis);
+    sprintf(riwayat.merk, "%s",listing.merk);
+    sprintf(riwayat.namaUser, "%s",session.nama);
+    sprintf(riwayat.username, "%s",listing.username);
+    sprintf(riwayat.pembeli, "%s",session.username);
+    sprintf(riwayat.alamat, "%s",session.alamat);
+    sprintf(riwayat.no, "%s",session.no);
     datetime(); // waktu beli
     riwayat.harga = listing.harga;
     printf("\n");
+    // write to file
+    f_riwayat = fopen("riwayatUser.dat", "ab");
     fwrite(&riwayat, sizeof(riwayat), 1, f_riwayat);
     fclose(f_riwayat);
 
@@ -1079,40 +1077,24 @@ void jualKendaraan(char jenis[20])
 {
     system("cls");
     printf("\t  ==[Jual Kendaraan]==\n\n");
-    printf("Banyak kendaraan: ");
-    scanf("%d", &n);
-    printf("\n");
-    getchar();
-    f_listing = fopen("listingKendaraan.dat", "ab+");
-    for (i = 0; i < n; i++)
-    {
-        printf("%d.  Merk\t\t: ", i + 1);
+        printf("    Merk\t\t: ");
         gets(listing.merk);
         printf("    Nama\t\t: ");
-        scanf("%[^\n]s", listing.nama);
-        getchar();
-        printf("    Jual/Sewa?\t\t: ");
-        gets(listing.status);
-        if (strcasecmp(listing.status, "jual") == 0)
-        {
-            printf("    Harga Jual\t\t: ");
-            scanf("%lf", &listing.harga);
-            listing.hargaSewa = 0.0;
-        }
-        else if (strcasecmp(listing.status, "sewa") == 0)
-        {
-            printf("    Harga Sewa(per jam)\t: ");
-            scanf("%lf", &listing.hargaSewa);
-            listing.harga = 0.0;
-        }
+        gets(listing.nama);
+        printf("    Harga Jual\t\t: ");
+        scanf("%lf", &listing.harga);
+        listing.hargaSewa = 0.0;
         listing.id = idGenerator(listing.nama);
         strcpy(listing.request, "Pending");
+        strcpy(listing.status, "Jual");
         strcpy(listing.jenis, jenis);
         strcpy(listing.username, session.username);
         getchar();
         printf("\n");
+        
+    // write to file
+    f_listing = fopen("listingKendaraan.dat", "ab");
         fwrite(&listing, sizeof(listing), 1, f_listing);
-    }
     fclose(f_listing);
     green("\nBerhasil Ditambahkan!\n\n");
     reset();
@@ -1141,6 +1123,10 @@ void sewaKendaraan(char jenis[20])
 
     // cari kendaraan
     cariListing("menuSewa", id);
+    if (strcasecmp(listing.status, "sewa") != 0)
+    {
+        beliKendaraan(jenis);
+    }
 
     // pemabayaran
     bayar = listing.hargaSewa * t;
@@ -1150,20 +1136,20 @@ void sewaKendaraan(char jenis[20])
         printf("Masukan Nominal: Rp.");
         scanf("%lf", &uang);
         getchar();
-        if (listing.hargaSewa == uang)
-        {
-            system("cls");
-            green("Pembayaran Berhasil!!\n");
-            printf("Berhasil Menyewa!!\n\n");
-            reset();
-            break;
-        }
-        else if (listing.hargaSewa < uang)
+        if (listing.hargaSewa < uang)
         {
             uang = uang - listing.hargaSewa;
             system("cls");
             printf("Kembalian: Rp.%.2f\n", uang);
             green("Pembayaran Berhasil!!\n\n");
+            reset();
+            break;
+        }
+        else if (listing.hargaSewa == uang)
+        {
+            system("cls");
+            green("Pembayaran Berhasil!!\n");
+            printf("Berhasil Menyewa!!\n\n");
             reset();
             break;
         }
@@ -1186,7 +1172,6 @@ void sewaKendaraan(char jenis[20])
     // proses sewa, update listing status
     f_listing = fopen("listingKendaraan.dat", "rb");
     temp_listing = fopen("listingKendaraan2.dat", "wb");
-
     while (fread(&tempListing, sizeof(tempListing), 1, f_listing))
     {
         if (listing.id != id)
@@ -1200,29 +1185,29 @@ void sewaKendaraan(char jenis[20])
             x = 1;
         }
     }
-
     fclose(f_listing);
     fclose(temp_listing);
     remove("listingKendaraan.dat");
     rename("listingKendaraan2.dat", "listingKendaraan.dat");
 
     // write ke riwayat
-    f_riwayat = fopen("riwayatUser.dat", "wb");
     riwayat.id = idGenerator(listing.nama);
-    strcpy(riwayat.namaKendaraan, listing.nama);
-    strcpy(riwayat.status, listing.status);
-    strcpy(riwayat.jenis, jenis);
-    strcpy(riwayat.merk, listing.merk);
-    strcpy(riwayat.namaUser, session.nama);
-    strcpy(riwayat.username, listing.username);
-    strcpy(riwayat.pembeli, session.username);
-    strcpy(riwayat.alamat, session.alamat);
-    strcpy(riwayat.no, session.no);
+    sprintf(riwayat.namaKendaraan, "%s", listing.nama);
+    sprintf(riwayat.status, "%s", listing.status);
+    sprintf(riwayat.jenis, "%s", jenis);
+    sprintf(riwayat.merk, "%s", listing.merk);
+    sprintf(riwayat.namaUser, "%s", session.nama);
+    sprintf(riwayat.username, "%s", listing.username);
+    sprintf(riwayat.pembeli, "%s", session.username);
+    sprintf(riwayat.alamat, "%s", session.alamat);
+    sprintf(riwayat.no, "%s", session.no);
     datetime(); // waktu
     riwayat.lamaSewa = t;
     riwayat.hargaSewa = listing.hargaSewa;
     riwayat.bayar = bayar;
     printf("\n");
+    // write to file
+    f_riwayat = fopen("riwayatUser.dat", "ab");
     fwrite(&riwayat, sizeof(riwayat), 1, f_listing);
     fclose(f_riwayat);
 
@@ -1307,27 +1292,27 @@ void kendaraanList(char key[20], char jenis[20])
             listingSort[len] = listing; // buat nampilin list yang spesifik
             len++;
         }
-        else if (strcasecmp(listing.request, key) == 0)
+        else if (strcasecmp(listing.request, key) == 0 && strcasecmp(jenis, "pending") == 0)
         {
             listingSort[len] = listing; // buat admin nge-acc
             len++;
         }
-        else if (strcasecmp(listing.username, key) == 0)
+        else if (strcasecmp(listing.username, key) == 0 && strcasecmp(jenis, "all") == 0)
         {
             listingSort[len] = listing; // buat fitur listing saya
             len++;
         }
-        else if (strcasecmp(key, "jualUser") == 0 && strcasecmp(listing.status, "jual") == 0 && strcasecmp(listing.jenis, jenis) == 0 && strcasecmp(listing.username, session.username) != 0)
+        else if (strcasecmp(key, "jualUser") == 0 && strcasecmp(listing.status, "jual") == 0 && strcasecmp(listing.jenis, jenis) == 0 && strcasecmp(listing.username, session.username) != 0 && strcasecmp(listing.request, "ditolak") != 0)
         {
             listingSort[len] = listing; // buat fitur beli kendaraan user
             len++;
         }
-        else if (strcasecmp(key, "sewaUser") == 0 && strcasecmp(listing.status, "jual") == 0 && strcasecmp(listing.jenis, jenis) == 0 && strcasecmp(listing.username, session.username) != 0)
+        else if (strcasecmp(key, "sewaUser") == 0 && strcasecmp(listing.status, "sewa") == 0 && strcasecmp(listing.jenis, jenis) == 0 && strcasecmp(listing.username, session.username) != 0)
         {
             listingSort[len] = listing; // buat fitur sewa kendaraan user
             len++;
         }
-        else if (strcasecmp(key, "all") == 0 && strcasecmp(listing.request, "pending") != 0 && strcasecmp(listing.status, "terjual") != 0 && strcasecmp(listing.status, "disewakan") != 0)
+        else if (strcasecmp(key, "all") == 0 && strcasecmp(listing.request, "pending") != 0 && strcasecmp(listing.status, "terjual") != 0 && strcasecmp(listing.status, "disewakan") != 0 && strcasecmp(listing.request, "ditolak") != 0)
         {
             listingSort[len] = listing; // buat nampilin semua list
             len++;
@@ -1374,26 +1359,39 @@ void kendaraanList(char key[20], char jenis[20])
         {
             green(listingSort[i].status);
             reset();
-            printf("\n    Harga\t: Rp.%.2f\n\n", listingSort[i].harga);
+            printf("\n    Harga\t: Rp.%.2f\n", listingSort[i].harga);
         }
         else if (strcasecmp(listingSort[i].status, "sewa") == 0)
         {
             cyan(listingSort[i].status);
             reset();
-            printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listingSort[i].hargaSewa);
+            printf("\n    Harga Sewa\t: Rp.%.2f\n", listingSort[i].hargaSewa);
         }
         else if (strcasecmp(listingSort[i].status, "terjual") == 0)
         {
             yellow(listingSort[i].status);
             reset();
-            printf("\n    Harga\t: Rp.%.2f\n\n", listingSort[i].harga);
+            printf("\n    Harga\t: Rp.%.2f\n", listingSort[i].harga);
         }
         else if (strcasecmp(listingSort[i].status, "disewakan") == 0)
         {
             yellow(listingSort[i].status);
             reset();
-            printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listingSort[i].hargaSewa);
+            printf("\n    Harga Sewa\t: Rp.%.2f\n", listingSort[i].hargaSewa);
         }
+        if (strcasecmp(listingSort[i].request, "pending") == 0 && strcasecmp(key, "jualUser") != 0 && strcasecmp(listing.username[i], session.username) == 0)
+        {
+            printf("    Request\t: ");
+            purple(listingSort[i].request);
+            reset();
+        }
+        if (strcasecmp(listingSort[i].request, "ditolak") == 0 && strcasecmp(key, "jualUser") != 0 && strcasecmp(listing.username[i], session.username) == 0)
+        {
+            printf("    Request\t: ");
+            purple(listingSort[i].request);
+            reset();
+        }
+        printf("\n\n");
     }
 }
 
@@ -1410,45 +1408,35 @@ void riwayatList()
         }
     }
     fclose(f_riwayat);
-    printf("%s\n", riwayatSort[0].waktuPembelian);
-    // for (i = 0; i < len - 1; i++)
-    // {
-    //     for (j = 0; j < len - i - 1; j++)
-    //     {
-    //         if (strcmp(riwayatSort[j].waktuPembelian, riwayatSort[j + 1].waktuPembelian) > 0)
-    //         {
-    //             tempRiwayat = riwayatSort[j];
-    //             riwayatSort[j] = riwayatSort[j + 1];
-    //             riwayatSort[j + 1] = tempRiwayat;
-    //         }
-    //     }
-    // }
-    system("pause");
+    // printf("%s\n", riwayatSort[0].waktuPembelian);
+
+    // system("pause");
     for (i = 0; i < len; i++)
     {
-        printf("%d.  ID\t\t: %s\n", i + 1, riwayatSort[i].id);
+        printf("%d.  ID\t\t\t: %d\n", i + 1, riwayatSort[i].id);
         printf("    Nama\t\t: %s\n", riwayatSort[i].namaKendaraan);
         printf("    Jenis\t\t: %s\n", riwayatSort[i].jenis);
         printf("    Pemilik\t\t: %s\n", riwayatSort[i].username);
         printf("    Pembeli/Penyewa\t: %s\n", riwayatSort[i].pembeli);
         printf("    Alamat\t\t: %s\n", riwayatSort[i].alamat);
         printf("    No. Telp\t\t: %s\n", riwayatSort[i].no);
-        printf("    Waktu Transaksi\t\t: %s\n", riwayatSort[i].waktuPembelian);
-        printf("    Biaya Sewa\t\t: %.2f\n", riwayatSort[i].hargaSewa);
+        printf("    Waktu Transaksi\t: %s\n", riwayatSort[i].waktuPembelian);
+        printf("    Status\t\t: ");
         if (strcasecmp(riwayatSort[i].status, "jual") == 0 || strcasecmp(riwayatSort[i].status, "Terjual") == 0)
         {
             green(riwayatSort[i].status);
             reset();
-            printf("\n    Harga\t: Rp.%.2f\n\n", riwayatSort[i].harga);
+            printf("\n    Harga\t\t: Rp.%.2f\n", riwayatSort[i].harga);
         }
         else if (strcasecmp(riwayatSort[i].status, "sewa") == 0 || strcasecmp(riwayatSort[i].status, "disewakan") == 0)
         {
             cyan(riwayatSort[i].status);
             reset();
-            printf("\n    Harga Sewa\t: Rp.%.2f\n\n", riwayatSort[i].hargaSewa);
-            printf("\n    Nominal Bayar\t: Rp.%.2f\n\n", riwayatSort[i].bayar);
-            printf("\n    Lama Sewa\t: %d\n\n", riwayatSort[i].lamaSewa);
+            printf("\n    Harga Sewa\t: Rp.%.2f\n", riwayatSort[i].hargaSewa);
+            printf("   Nominal Bayar\t: Rp.%.2f\n", riwayatSort[i].bayar);
+            printf("   Lama Sewa\t\t: %d\n", riwayatSort[i].lamaSewa);
         }
+        printf("\n");
     }
-    system("pause");
+    // system("pause");
 }
