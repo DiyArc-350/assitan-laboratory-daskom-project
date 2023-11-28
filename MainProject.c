@@ -656,7 +656,7 @@ void editListing(int id, char ans[20])
 {
     system("cls");
     int x = 0;
-    printf("\n");
+    printf("\n %s",ans);
     f_listing = fopen("listingKendaraan.dat", "rb");
     temp_listing = fopen("listingKendaraan2.dat", "wb");
 
@@ -1290,33 +1290,35 @@ void kendaraanList(char key[20], char jenis[20])
         if (strcasecmp(listing.status, key) == 0 && strcasecmp(listing.jenis, jenis) == 0)
         {
             listingSort[len] = listing; // buat nampilin list yang spesifik
-            len++;
+        
+            
         }
         else if (strcasecmp(listing.request, key) == 0 && strcasecmp(jenis, "pending") == 0)
         {
             listingSort[len] = listing; // buat admin nge-acc
-            len++;
+            
         }
         else if (strcasecmp(listing.username, key) == 0 && strcasecmp(jenis, "all") == 0)
         {
             listingSort[len] = listing; // buat fitur listing saya
-            len++;
+            
         }
         else if (strcasecmp(key, "jualUser") == 0 && strcasecmp(listing.status, "jual") == 0 && strcasecmp(listing.jenis, jenis) == 0 && strcasecmp(listing.username, session.username) != 0 && strcasecmp(listing.request, "ditolak") != 0)
         {
             listingSort[len] = listing; // buat fitur beli kendaraan user
-            len++;
+            
         }
         else if (strcasecmp(key, "sewaUser") == 0 && strcasecmp(listing.status, "sewa") == 0 && strcasecmp(listing.jenis, jenis) == 0 && strcasecmp(listing.username, session.username) != 0)
         {
             listingSort[len] = listing; // buat fitur sewa kendaraan user
-            len++;
+            
         }
         else if (strcasecmp(key, "all") == 0 && strcasecmp(listing.request, "pending") != 0 && strcasecmp(listing.status, "terjual") != 0 && strcasecmp(listing.status, "disewakan") != 0 && strcasecmp(listing.request, "ditolak") != 0)
         {
             listingSort[len] = listing; // buat nampilin semua list
-            len++;
+            
         }
+        len++;
     }
     fclose(f_listing);
 
@@ -1379,13 +1381,13 @@ void kendaraanList(char key[20], char jenis[20])
             reset();
             printf("\n    Harga Sewa\t: Rp.%.2f\n", listingSort[i].hargaSewa);
         }
-        if (strcasecmp(listingSort[i].request, "pending") == 0 && strcasecmp(key, "jualUser") != 0 && strcasecmp(listing.username[i], session.username) == 0)
+        if (strcasecmp(listingSort[i].request, "pending") == 0 && strcasecmp(key, "jualUser") != 0)
         {
             printf("    Request\t: ");
             purple(listingSort[i].request);
             reset();
         }
-        if (strcasecmp(listingSort[i].request, "ditolak") == 0 && strcasecmp(key, "jualUser") != 0 && strcasecmp(listing.username[i], session.username) == 0)
+        if (strcasecmp(listingSort[i].request, "ditolak") == 0 && strcasecmp(key, "jualUser") != 0)
         {
             printf("    Request\t: ");
             purple(listingSort[i].request);
@@ -1393,6 +1395,7 @@ void kendaraanList(char key[20], char jenis[20])
         }
         printf("\n\n");
     }
+    // system("pause");
 }
 
 void riwayatList()
