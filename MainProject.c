@@ -29,7 +29,7 @@ int fileExist(), idGenerator(char key[40]);
 
 // fungsi acc
 void loginUser(int y), registerUser(), menuUser(), listingSaya(), riwayatSaya();
-void pilihJenis(char menu[20]), beliKendaraan(char jenis[20]), jualKendaraan(char jenis[20]), sewaKendaraan(char jenis[20]);
+void pilihJenis(char menu[20]), beliKendaraan(char jenis[20]), jualKendaraan(char jenis[20]), sewaKendaraan(char jenis[20]), cariListingUser(char key[40], int id);
 int cekUsername(char username[16]);
 
 // fungsi sorting
@@ -756,17 +756,21 @@ void cariListing(char key[40], int id)
             {
                 green(listing.status);
                 reset();
-                printf("\n    Harga\t: Rp.%.2f\n\n", listing.harga);
+                printf("\n    Harga\t: Rp.%.2f\n", listing.harga);
             }
             else if (strcasecmp(listing.status, "sewa") == 0)
             {
                 cyan(listing.status);
                 reset();
-                printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listing.hargaSewa);
+                printf("\n    Harga Sewa\t: Rp.%.2f\n", listing.hargaSewa);
+            }
+            if (strcasecmp(listing.request, "pending") == 0)
+            {
+                printf("    Request\t: %s\n", listing.request);
             }
             x++;
         }
-        if (listing.id == id)
+        if(listing.id == id && strcasecmp(listing.request, "Disetujui") == 0)
         {
             printf("%d.  ID\t\t: %d\n", x + 1, listing.id);
             printf("    Jenis\t: %s\n", listing.jenis);
@@ -786,7 +790,7 @@ void cariListing(char key[40], int id)
                 reset();
                 printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listing.hargaSewa);
             }
-            x++;
+            break;
         }
         else if (listing.id == id && strcasecmp(key, "menuSewa") == 0)
         {
@@ -848,6 +852,83 @@ void cariListing(char key[40], int id)
     // printf("\n<= Lihat Listing Kendaraan\n");
     // system("pause");
     // manajemenListing();
+}
+
+void cariListingUser(char key[40], int id){
+    int x = 0;
+    system("cls");
+    printf("\n");
+    f_listing = fopen("listingKendaraan.dat", "rb");
+
+    while ((fread(&listing, sizeof(listing), 1, f_listing)) != 0)
+    {
+        if (listing.id == id && strcasecmp(listing.request, "Disetujui") == 0)
+        {
+            printf("%d.  ID\t\t: %d\n", x + 1, listing.id);
+            printf("    Jenis\t: %s\n", listing.jenis);
+            printf("    Merk\t: %s\n", listing.merk);
+            printf("    Nama\t: %s\n", listing.nama);
+            printf("    Pemilik\t: %s\n", listing.username);
+            printf("    Status\t: ");
+            if (strcasecmp(listing.status, "jual") == 0)
+            {
+                green(listing.status);
+                reset();
+                printf("\n    Harga\t: Rp.%.2f\n\n", listing.harga);
+            }
+            else if (strcasecmp(listing.status, "sewa") == 0)
+            {
+                cyan(listing.status);
+                reset();
+                printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listing.hargaSewa);
+            }
+            break;
+        }
+        else if (listing.id == id && strcasecmp(key, "menuSewa") == 0 && strcasecmp(listing.request, "Disetujui") == 0)
+        {
+            printf("%d.  ID\t\t: %d\n", x + 1, listing.id);
+            printf("    Jenis\t: %s\n", listing.jenis);
+            printf("    Merk\t: %s\n", listing.merk);
+            printf("    Nama\t: %s\n", listing.nama);
+            printf("    Pemilik\t: %s\n", listing.username);
+            printf("    Status\t: ");
+            if (strcasecmp(listing.status, "jual") == 0)
+            {
+                green(listing.status);
+                reset();
+                printf("\n    Harga\t: Rp.%.2f\n\n", listing.harga);
+            }
+            else if (strcasecmp(listing.status, "sewa") == 0)
+            {
+                cyan(listing.status);
+                reset();
+                printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listing.hargaSewa);
+            }
+            break;
+        }
+        else if (listing.id == id && strcasecmp(key, "menuBeli") == 0 && strcasecmp(listing.request, "Disetujui") == 0)
+        {
+            printf("%d.  ID\t\t: %d\n", x + 1, listing.id);
+            printf("    Jenis\t: %s\n", listing.jenis);
+            printf("    Merk\t: %s\n", listing.merk);
+            printf("    Nama\t: %s\n", listing.nama);
+            printf("    Pemilik\t: %s\n", listing.username);
+            printf("    Status\t: ");
+            if (strcasecmp(listing.status, "jual") == 0)
+            {
+                green(listing.status);
+                reset();
+                printf("\n    Harga\t: Rp.%.2f\n\n", listing.harga);
+            }
+            else if (strcasecmp(listing.status, "sewa") == 0)
+            {
+                cyan(listing.status);
+                reset();
+                printf("\n    Harga Sewa\t: Rp.%.2f\n\n", listing.hargaSewa);
+            }
+            break;
+        }
+    }
 }
 
 // menu User
@@ -971,13 +1052,14 @@ void beliKendaraan(char jenis[20])
     }
 
     // cari kendaraan
-    cariListing("menuBeli", id);
+    cariListingUser("menuBeli", id);
     if (strcasecmp(listing.status,"jual") != 0)
     {
         beliKendaraan(jenis);
     }
     
     // pemabayaran
+    // printf("%s, %i", listing.nama, id);
     printf("\n\nHarga Kendaraan Sebesar, Rp.%.2f\n", listing.harga);
     while (attempt > 0)
     {
@@ -1122,10 +1204,12 @@ void sewaKendaraan(char jenis[20])
     scanf("%d", &t);
 
     // cari kendaraan
-    cariListing("menuSewa", id);
+    cariListingUser("menuSewa", id);
+    // printf("\n%s", listing.nama);
+    // system("pause");
     if (strcasecmp(listing.status, "sewa") != 0)
     {
-        beliKendaraan(jenis);
+        sewaKendaraan(jenis);
     }
 
     // pemabayaran
@@ -1290,35 +1374,35 @@ void kendaraanList(char key[20], char jenis[20])
         if (strcasecmp(listing.status, key) == 0 && strcasecmp(listing.jenis, jenis) == 0)
         {
             listingSort[len] = listing; // buat nampilin list yang spesifik
-        
+            len++;
             
         }
         else if (strcasecmp(listing.request, key) == 0 && strcasecmp(jenis, "pending") == 0)
         {
             listingSort[len] = listing; // buat admin nge-acc
-            
+            len++;
         }
         else if (strcasecmp(listing.username, key) == 0 && strcasecmp(jenis, "all") == 0)
         {
             listingSort[len] = listing; // buat fitur listing saya
-            
+            len++;
         }
-        else if (strcasecmp(key, "jualUser") == 0 && strcasecmp(listing.status, "jual") == 0 && strcasecmp(listing.jenis, jenis) == 0 && strcasecmp(listing.username, session.username) != 0 && strcasecmp(listing.request, "ditolak") != 0)
+        else if (strcasecmp(key, "jualUser") == 0 && strcasecmp(listing.status, "jual") == 0 && strcasecmp(listing.jenis, jenis) == 0 && strcasecmp(listing.username, session.username) != 0 && strcasecmp(listing.request, "ditolak") != 0 && strcasecmp(listing.request, "pending") != 0)
         {
             listingSort[len] = listing; // buat fitur beli kendaraan user
-            
+            len++;
         }
-        else if (strcasecmp(key, "sewaUser") == 0 && strcasecmp(listing.status, "sewa") == 0 && strcasecmp(listing.jenis, jenis) == 0 && strcasecmp(listing.username, session.username) != 0)
+        else if (strcasecmp(key, "sewaUser") == 0 && strcasecmp(listing.status, "sewa") == 0 && strcasecmp(listing.jenis, jenis) == 0 && strcasecmp(listing.username, session.username) != 0 )
         {
             listingSort[len] = listing; // buat fitur sewa kendaraan user
-            
+            len++;
         }
         else if (strcasecmp(key, "all") == 0 && strcasecmp(listing.request, "pending") != 0 && strcasecmp(listing.status, "terjual") != 0 && strcasecmp(listing.status, "disewakan") != 0 && strcasecmp(listing.request, "ditolak") != 0)
         {
             listingSort[len] = listing; // buat nampilin semua list
-            
+            len++;
         }
-        len++;
+        // len++;
     }
     fclose(f_listing);
 
